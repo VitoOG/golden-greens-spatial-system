@@ -1,0 +1,70 @@
+name: Validate and deploy Golden Greens Spatial Product System
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate application
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Validate product catalog
+        run: python3 scripts/validate_catalog.py
+
+      - name: Test calculation kernel
+        run: node scripts/test_calculation_kernel.mjs
+
+      - name: Verify Pages entry point
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          test -s index.html
+          test -s styles.css
+          test -s src/main.js
+          test -s src/gl.js
+          test -s src/scene.js
+          test -s data/product-catalog.json
+          test -d assets/obj
+          test -f .nojekyll
+
+  deploy:
+    name: Deploy GitHub Pages
+    if: github.event_name != 'pull_request'
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload static site artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
