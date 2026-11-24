@@ -1,0 +1,177 @@
+{
+  "schema_version": "0.1.0",
+  "groups": [
+    {
+      "id": "structure",
+      "label": "Конструкция",
+      "color": "#8d9b8f"
+    },
+    {
+      "id": "grow",
+      "label": "Выращивание",
+      "color": "#8fc777"
+    },
+    {
+      "id": "water",
+      "label": "Вода / раствор",
+      "color": "#69aeca"
+    },
+    {
+      "id": "climate",
+      "label": "Климат",
+      "color": "#c0a5d9"
+    },
+    {
+      "id": "automation",
+      "label": "Автоматика",
+      "color": "#d2b477"
+    },
+    {
+      "id": "logistics",
+      "label": "Логистика",
+      "color": "#c49a6c"
+    },
+    {
+      "id": "laboratory",
+      "label": "Лаборатория",
+      "color": "#91b7b2"
+    }
+  ],
+  "components": [
+    {
+      "id": "shell-frame",
+      "name": "Каркас / оболочка",
+      "group": "structure",
+      "unit": "м",
+      "purpose": "Несущая геометрия, габариты и конструктивная сетка.",
+      "assetObj": null,
+      "parametricSource": "openscad/gg_components.scad#gg_box_frame"
+    },
+    {
+      "id": "rack-module",
+      "name": "Стеллажный модуль",
+      "group": "grow",
+      "unit": "шт.",
+      "purpose": "Рама, полки, посадочные лотки и ярусы.",
+      "assetObj": "assets/obj/rack_module_2400x650x2100.obj",
+      "parametricSource": "openscad/gg_components.scad#gg_rack_unit"
+    },
+    {
+      "id": "grow-bed",
+      "name": "Грядка / канал",
+      "group": "grow",
+      "unit": "шт.",
+      "purpose": "Посадочная поверхность и технологический проход.",
+      "assetObj": "assets/obj/hydroponic_bed_6000x900.obj",
+      "parametricSource": "openscad/gg_components.scad#gg_grow_bed"
+    },
+    {
+      "id": "led-fixture",
+      "name": "LED-линейка",
+      "group": "grow",
+      "unit": "шт.",
+      "purpose": "Светильник с расчётными PPFD и PPE.",
+      "assetObj": "assets/obj/linear_led_fixture_1800.obj",
+      "parametricSource": "openscad/gg_components.scad#gg_led_fixture"
+    },
+    {
+      "id": "reservoir",
+      "name": "Бак раствора",
+      "group": "water",
+      "unit": "л",
+      "purpose": "Ёмкость хранения воды или питательного раствора.",
+      "assetObj": "assets/obj/nutrient_tank_500l_concept.obj",
+      "parametricSource": "openscad/gg_components.scad#gg_tank"
+    },
+    {
+      "id": "mixing-station",
+      "name": "Смесительная станция",
+      "group": "water",
+      "unit": "компл.",
+      "purpose": "Баки, дозирование, циркуляция, контроль pH/EC.",
+      "assetObj": "assets/obj/mixing_station_concept.obj",
+      "parametricSource": "openscad/gg_components.scad#gg_mixing_station"
+    },
+    {
+      "id": "pump-skid",
+      "name": "Насосный узел",
+      "group": "water",
+      "unit": "компл.",
+      "purpose": "Насос, коллектор, арматура и измерение расхода.",
+      "assetObj": "assets/obj/pump_skid_concept.obj",
+      "parametricSource": "openscad/gg_components.scad#gg_pump_skid"
+    },
+    {
+      "id": "irrigation",
+      "name": "Орошение / магистраль",
+      "group": "water",
+      "unit": "м",
+      "purpose": "Подача, обратная линия, распределение и дренаж.",
+      "assetObj": null,
+      "parametricSource": "geometry generated from route profile"
+    },
+    {
+      "id": "ahu",
+      "name": "Климатический блок",
+      "group": "climate",
+      "unit": "шт.",
+      "purpose": "Условный AHU / HVAC-блок; тепловой подбор отдельно.",
+      "assetObj": "assets/obj/ahu_climate_unit_concept.obj",
+      "parametricSource": "openscad/gg_components.scad#gg_ahu"
+    },
+    {
+      "id": "dehumidifier",
+      "name": "Осушение",
+      "group": "climate",
+      "unit": "шт.",
+      "purpose": "Производительность определяется влаговыделением культуры.",
+      "assetObj": null,
+      "parametricSource": "equipment model required"
+    },
+    {
+      "id": "control-cabinet",
+      "name": "Шкаф управления",
+      "group": "automation",
+      "unit": "шт.",
+      "purpose": "PLC, питание, защиты, I/O и коммуникационные шлюзы.",
+      "assetObj": "assets/obj/plc_control_cabinet_concept.obj",
+      "parametricSource": "openscad/gg_components.scad#gg_control_cabinet"
+    },
+    {
+      "id": "edge-node",
+      "name": "Edge / Server Node",
+      "group": "automation",
+      "unit": "шт.",
+      "purpose": "Локальная телеметрия, журналирование и сетевые сервисы.",
+      "assetObj": "assets/obj/edge_server_rack_concept.obj",
+      "parametricSource": "openscad/gg_components.scad#gg_edge_rack"
+    },
+    {
+      "id": "lab-bench",
+      "name": "Лабораторный стол",
+      "group": "laboratory",
+      "unit": "шт.",
+      "purpose": "Рабочая поверхность, приборы и расходные материалы.",
+      "assetObj": "assets/obj/laboratory_bench_concept.obj",
+      "parametricSource": "openscad/gg_components.scad#gg_lab_bench"
+    },
+    {
+      "id": "seed-bank",
+      "name": "Seed bank cabinet",
+      "group": "laboratory",
+      "unit": "шт.",
+      "purpose": "Шкаф хранения семян и коллекционных образцов.",
+      "assetObj": "assets/obj/seed_bank_cabinet_concept.obj",
+      "parametricSource": "openscad/gg_components.scad#gg_seed_bank"
+    },
+    {
+      "id": "warehouse-rack",
+      "name": "Складской стеллаж",
+      "group": "logistics",
+      "unit": "шт.",
+      "purpose": "Хранение упаковки, расходных материалов и продукции.",
+      "assetObj": "assets/obj/warehouse_rack_bay_concept.obj",
+      "parametricSource": "openscad/gg_components.scad#gg_warehouse_rack"
+    }
+  ]
+}

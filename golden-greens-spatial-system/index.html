@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#101810" />
+  <meta name="description" content="Golden Greens Spatial Product System — параметрический 3D-каталог CEA-продуктов и производственной инфраструктуры." />
+  <title>Golden Greens — Spatial Product System</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-lockup">
+        <div class="brand-mark">GG</div>
+        <div>
+          <div class="brand-name">GOLDEN GREENS</div>
+          <div class="brand-subtitle">SPATIAL PRODUCT SYSTEM <span class="build-tag">MVP 0.1</span></div>
+        </div>
+      </div>
+      <nav class="top-actions" aria-label="Основные действия">
+        <button id="campusButton" class="quiet-button">Кампус</button>
+        <button id="homeViewButton" class="quiet-button">Общий вид</button>
+        <button id="importJsonButton" class="quiet-button">Импорт JSON</button>
+        <input id="importJsonInput" type="file" accept=".json,application/json" hidden />
+        <button id="exportJsonButton" class="quiet-button">Паспорт JSON</button>
+        <button id="exportBomButton" class="quiet-button">BOM CSV</button>
+        <button id="exportObjButton" class="primary-button">Экспорт OBJ</button>
+      </nav>
+    </header>
+
+    <main class="workspace">
+      <aside class="catalog-panel panel">
+        <div class="panel-heading">
+          <div>
+            <div class="eyebrow">PRODUCT LIBRARY</div>
+            <h1>Каталог систем</h1>
+          </div>
+          <span id="productCount" class="count-pill">09</span>
+        </div>
+        <label class="search-wrap">
+          <span class="search-icon">⌕</span>
+          <input id="catalogSearch" type="search" placeholder="Найти продукт или систему" autocomplete="off" />
+        </label>
+        <div id="productList" class="product-list" aria-label="Семейства продукции"></div>
+        <div class="catalog-footer">
+          <span class="status-dot"></span>
+          Локальная библиотека · без аккаунта
+        </div>
+      </aside>
+
+      <section class="viewport-panel panel">
+        <div class="viewport-toolbar">
+          <div class="viewport-heading">
+            <div class="eyebrow">3D ENVIRONMENT</div>
+            <div class="viewport-title-row">
+              <h2 id="viewportTitle">Indoor Growroom</h2>
+              <span id="modeTag" class="mode-tag">PRODUCT MODEL</span>
+            </div>
+            <div id="viewportSubtitle" class="viewport-subtitle">Параметрическая сцена · условная инженерная компоновка</div>
+          </div>
+          <div class="viewport-actions">
+            <button id="resetCameraButton" class="icon-button" title="Сбросить камеру" aria-label="Сбросить камеру">↺</button>
+            <button id="roofToggleButton" class="toggle-button active" aria-pressed="true">Каркас</button>
+            <button id="labelsToggleButton" class="toggle-button active" aria-pressed="true">Сетка</button>
+          </div>
+        </div>
+        <div class="viewport-stage">
+          <canvas id="sceneCanvas" aria-label="Интерактивная трёхмерная модель"></canvas>
+          <div class="canvas-corner canvas-corner-left">
+            <span class="axis-chip"><i class="axis-x"></i>X</span>
+            <span class="axis-chip"><i class="axis-y"></i>Y</span>
+            <span class="axis-chip"><i class="axis-z"></i>Z</span>
+          </div>
+          <div class="canvas-corner canvas-corner-right">
+            <span class="scene-chip">WEBGL · REAL SCALE</span>
+            <span class="scene-chip" id="objectCountChip">0 OBJECTS</span>
+          </div>
+          <div id="canvasHint" class="canvas-hint">ЛКМ — вращение · Колесо — масштаб · Клик по объекту — паспорт</div>
+          <div id="webglFallback" class="webgl-fallback hidden">
+            <strong>WebGL недоступен</strong>
+            <span>Открой архив через локальный сервер и проверь поддержку WebGL в браузере.</span>
+          </div>
+        </div>
+        <div class="component-strip">
+          <div class="strip-label">СЛОИ СЦЕНЫ</div>
+          <div id="layerControls" class="layer-controls"></div>
+        </div>
+        <div class="selected-object-bar">
+          <div class="selected-object-icon">⌖</div>
+          <div class="selected-object-copy">
+            <span class="eyebrow">ВЫБРАННЫЙ ОБЪЕКТ</span>
+            <strong id="selectedObjectName">Производственный контур</strong>
+          </div>
+          <span id="selectedObjectId" class="object-id">GG-SPACE-001</span>
+        </div>
+      </section>
+
+      <aside class="inspector-panel panel">
+        <div class="panel-heading inspector-heading">
+          <div>
+            <div class="eyebrow">ENGINEERING INSPECTOR</div>
+            <h2>Параметры</h2>
+          </div>
+          <span class="live-mark"><i></i> LOCAL</span>
+        </div>
+        <section class="inspector-section">
+          <div class="section-title"><span>01</span> Габариты оболочки</div>
+          <div class="dimension-grid">
+            <label>Длина, м<input id="lengthInput" type="number" min="0.5" max="200" step="0.1" /></label>
+            <label>Ширина, м<input id="widthInput" type="number" min="0.5" max="200" step="0.1" /></label>
+            <label>Высота, м<input id="heightInput" type="number" min="1" max="30" step="0.1" /></label>
+          </div>
+          <div class="form-note">Изменение размеров перестраивает геометрию сцены и предварительные показатели.</div>
+        </section>
+        <section class="inspector-section">
+          <div class="section-title"><span>02</span> Производственная конфигурация</div>
+          <div class="dimension-grid two-col">
+            <label>Модулей / камер<input id="chambersInput" type="number" min="1" max="100" step="1" /></label>
+            <label>Стеллажей / грядок<input id="unitsInput" type="number" min="0" max="200" step="1" /></label>
+            <label>Ярусов<input id="levelsInput" type="number" min="1" max="12" step="1" /></label>
+            <label>Ширина модуля, м<input id="unitWidthInput" type="number" min="0.2" max="3" step="0.05" /></label>
+          </div>
+        </section>
+        <section class="inspector-section">
+          <div class="section-title"><span>03</span> Расчётные условия</div>
+          <div class="dimension-grid two-col">
+            <label>Целевой PPFD<input id="ppfdInput" type="number" min="0" max="1500" step="10" /></label>
+            <label>PPE светильника<input id="ppeInput" type="number" min="0.1" max="5" step="0.1" /></label>
+            <label>Фотопериод, ч/сут<input id="photoperiodInput" type="number" min="0" max="24" step="0.5" /></label>
+            <label>ACH, 1/ч<input id="achInput" type="number" min="0" max="60" step="0.5" /></label>
+          </div>
+          <div class="form-note">PPFD, PPE, фотопериод и ACH — редактируемые сценарные входы, а не универсальные нормы культуры.</div>
+        </section>
+        <section class="inspector-section calculation-section">
+          <div class="section-title"><span>04</span> Быстрые показатели</div>
+          <div class="metric-grid">
+            <div class="metric-card"><span id="floorAreaLabel">Площадь пола</span><strong id="floorAreaMetric">—</strong><small>м²</small></div>
+            <div class="metric-card"><span id="grossVolumeLabel">Валовый объём</span><strong id="grossVolumeMetric">—</strong><small>м³</small></div>
+            <div class="metric-card"><span>Площадь выращивания</span><strong id="growAreaMetric">—</strong><small>м²</small></div>
+            <div class="metric-card"><span>Расчёт LED</span><strong id="ledPowerMetric">—</strong><small>кВт · оценка</small></div>
+            <div class="metric-card"><span>Расход воздуха</span><strong id="airflowMetric">—</strong><small>м³/ч · по ACH</small></div>
+            <div class="metric-card"><span>Энергия LED</span><strong id="energyMetric">—</strong><small>кВт·ч/сут</small></div>
+            <div class="metric-card"><span>Известная нагрузка*</span><strong id="knownLoadMetric">—</strong><small>кВт · неполная</small></div>
+          </div>
+          <div id="calcStatus" class="calculation-status">Расчёт предварительный. Требуется инженерная верификация.</div>
+        </section>
+        <section class="inspector-section selected-inspector-section">
+          <div class="section-title"><span>05</span> Паспорт объекта</div>
+          <div id="objectInspector" class="object-inspector">
+            <span class="eyebrow">OBJECT PROFILE</span>
+            <strong>Выбери компонент в 3D-сцене</strong>
+            <p>Здесь появятся назначение, габариты и инженерные свойства выбранного элемента.</p>
+          </div>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="app-footer">
+      <span>GOLDEN GREENS · SPATIAL PRODUCT SYSTEM</span>
+      <span>DESIGN MODEL ≠ VERIFIED ENGINEERING DESIGN</span>
+      <span id="renderStatus">INITIALIZING WEBGL…</span>
+    </footer>
+  </div>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

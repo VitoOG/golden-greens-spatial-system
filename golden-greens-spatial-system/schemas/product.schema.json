@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goldengreens.example/schemas/product.schema.json",
+  "title": "Golden Greens Product Profile",
+  "type": "object",
+  "required": [
+    "id",
+    "code",
+    "name",
+    "type",
+    "category",
+    "dimensions",
+    "chambers",
+    "units",
+    "levels",
+    "unitWidth"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9-]+$"
+    },
+    "code": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "short": {
+      "type": "string"
+    },
+    "icon": {
+      "type": "string"
+    },
+    "type": {
+      "enum": [
+        "racks",
+        "beds",
+        "chambers",
+        "container",
+        "containerHub",
+        "greenhouse",
+        "campus"
+      ]
+    },
+    "category": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "dimensions": {
+      "type": "object",
+      "required": [
+        "length",
+        "width",
+        "height"
+      ],
+      "properties": {
+        "length": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "width": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "height": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "chambers": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "units": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "levels": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "unitWidth": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "unitLengthRatio": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1
+    },
+    "rackRows": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "chamberCols": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "chamberRows": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "componentPowers": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "number",
+        "minimum": 0
+      }
+    },
+    "waterTankL": {
+      "type": "number",
+      "minimum": 0
+    },
+    "ppfd": {
+      "type": "number",
+      "minimum": 0
+    },
+    "ach": {
+      "type": "number",
+      "minimum": 0
+    },
+    "daylightHours": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 24
+    }
+  },
+  "additionalProperties": false
+}

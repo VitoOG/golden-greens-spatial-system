@@ -1,0 +1,252 @@
+# Golden Greens — parametric concept model generator for FreeCAD.
+# Run this macro in FreeCAD GUI. Dimensions are entered in millimetres.
+# Part::Box and Part::Cylinder objects remain directly editable in the property editor.
+# This is an initial layout macro, not structural/construction design.
+
+import os
+import re
+from datetime import datetime
+import FreeCAD as App
+import Part
+from FreeCAD import Vector
+
+# ---------------- User parameters ----------------
+MODEL = "growroom"  # nursery, vegetarium, growbox, growroom, chambers3, chambers9, chambers10, container, containerHub, greenhouse, turnkeyHub
+LENGTH = 6000.0
+WIDTH = 4000.0
+HEIGHT = 3000.0
+CHAMBERS = 1
+GROW_UNITS = 4
+LEVELS = 3
+UNIT_WIDTH = 700.0
+OUTPUT_DIR = os.path.join(os.path.expanduser("~"), "GoldenGreens_Exports")
+EXPORT_STEP = True
+
+COLORS = {
+    "structure": (0.60, 0.68, 0.61), "steel": (0.48, 0.57, 0.54),
+    "shelf": (0.55, 0.65, 0.56), "tray": (0.27, 0.42, 0.31),
+    "plant": (0.42, 0.68, 0.37), "led": (0.91, 0.84, 0.62),
+    "water": (0.30, 0.58, 0.70), "water_dark": (0.20, 0.40, 0.51),
+    "climate": (0.55, 0.55, 0.69), "cabinet": (0.39, 0.50, 0.44),
+    "amber": (0.73, 0.58, 0.36), "floor": (0.36, 0.43, 0.38),
+    "white": (0.83, 0.88, 0.83)
+}
+
+
+def safe_name(value):
+    return re.sub(r"[^A-Za-z0-9_]", "_", value)
+
+
+def make_group(doc, name):
+    group = doc.addObject("App::DocumentObjectGroup", safe_name(name))
+    group.Label = name
+    return group
+
+
+def set_color(obj, color_key):
+    try:
+        obj.ViewObject.ShapeColor = COLORS.get(color_key, COLORS["structure"])
+        obj.ViewObject.LineColor = (0.12, 0.17, 0.13)
+    except Exception:
+        pass
+
+
+def add_box(doc, group, name, center, size, color_key="structure"):
+    # World coordinates: X length, Y vertical, Z width.
+    sx, sy, sz = [float(v) for v in size]
+    obj = doc.addObject("Part::Box", safe_name(name))
+    obj.Label = name
+    obj.Length = max(1.0, sx)
+    obj.Width = max(1.0, sz)
+    obj.Height = max(1.0, sy)
+    obj.Placement.Base = Vector(float(center[0]) - sx/2.0, float(center[2]) - sz/2.0, float(center[1]) - sy/2.0)
+    set_color(obj, color_key)
+    group.addObject(obj)
+    return obj
+
+
+def add_cylinder(doc, group, name, center, diameter, height, color_key="water"):
+    d = float(diameter); h = float(height)
+    obj = doc.addObject("Part::Cylinder", safe_name(name))
+    obj.Label = name
+    obj.Radius = max(1.0, d/2.0)
+    obj.Height = max(1.0, h)
+    obj.Placement.Base = Vector(float(center[0]), float(center[2]), float(center[1]) - h/2.0)
+    set_color(obj, color_key)
+    group.addObject(obj)
+    return obj
+
+
+def add_frame(doc, group, name, cx, cz, L, W, H, color="structure"):
+    post = max(90.0, min(180.0, min(L, W)*0.025))
+    beam = post * 0.85
+    add_box(doc, group, name + " / floor slab", (cx, 50, cz), (L, 100, W), "floor")
+    for x in [cx-L/2+post/2, cx+L/2-post/2]:
+        for z in [cz-W/2+post/2, cz+W/2-post/2]:
+            add_box(doc, group, name + " / corner post", (x, H/2+50, z), (post, H, post), color)
+    for z in [cz-W/2+beam/2, cz+W/2-beam/2]:
+        add_box(doc, group, name + " / longitudinal top beam", (cx, H+50, z), (L, beam, beam), color)
+    for x in [cx-L/2+beam/2, cx+L/2-beam/2]:
+        add_box(doc, group, name + " / transverse top beam", (x, H+50, cz), (beam, beam, W), color)
+
+
+def add_rack(doc, group, name, cx, cz, L, D, H, levels):
+    post = max(35.0, min(65.0, D*0.08))
+    base_y = 180.0
+    rack_h = min(H*0.72, max(1000.0, H-450.0))
+    for x in [cx-L/2+post/2, cx+L/2-post/2]:
+        for z in [cz-D/2+post/2, cz+D/2-post/2]:
+            add_box(doc, group, name + " / upright", (x, base_y+rack_h/2, z), (post, rack_h, post), "steel")
+    for level in range(max(1, int(levels))):
+        y = base_y + 280 + (rack_h-420)*(level+0.25)/max(1, int(levels))
+        add_box(doc, group, name + " / shelf", (cx, y, cz), (L-80, 65, D-40), "shelf")
+        add_box(doc, group, name + " / grow tray", (cx, y+55, cz), (L-140, 35, D-120), "tray")
+        add_box(doc, group, name + " / LED bar", (cx, y+170, cz), (L*0.84, 48, D*0.48), "led")
+        # Stylized crop markers: not a planting-density model.
+        for n in range(5):
+            px = cx-L*0.34 + (L*0.68)*n/4.0
+            add_cylinder(doc, group, name + " / crop marker", (px, y+260, cz), 120, 190, "plant")
+
+
+def add_bed(doc, group, name, cx, cz, L, W):
+    add_box(doc, group, name + " / bed body", (cx, 220, cz), (L, 250, W), "tray")
+    add_box(doc, group, name + " / planting surface", (cx, 370, cz), (L-120, 55, W-120), "shelf")
+    for n in range(7):
+        px = cx-L*0.38 + L*0.76*n/6.0
+        add_cylinder(doc, group, name + " / crop marker", (px, 550, cz), 150, 240, "plant")
+
+
+def add_water(doc, group, cx, cz, H, volume_l=500):
+    diameter = min(1350.0, max(500.0, (max(100.0, volume_l)/1000.0)**0.5*1060.0))
+    tank_h = min(H*0.52, max(750.0, 1200.0))
+    add_cylinder(doc, group, "Water / nutrient reservoir", (cx, tank_h/2+160, cz), diameter, tank_h, "water")
+    add_cylinder(doc, group, "Water reservoir / lid", (cx, tank_h+190, cz), diameter+50, 70, "water_dark")
+    add_cylinder(doc, group, "Mixing vessel", (cx-diameter*1.15, 650, cz+diameter*0.7), diameter*0.55, 1050, "amber")
+    add_box(doc, group, "Pump skid base", (cx-diameter*0.75, 170, cz+diameter*1.4), (900, 260, 550), "steel")
+    add_cylinder(doc, group, "Pump motor", (cx-diameter*0.75, 500, cz+diameter*1.4), 260, 400, "water_dark")
+
+
+def add_climate(doc, group, cx, cz, H):
+    add_box(doc, group, "HVAC / AHU concept block", (cx, H*0.75, cz), (1350, 650, 750), "climate")
+    add_box(doc, group, "Air duct concept", (cx, H*0.88, cz-650), (1250, 150, 180), "steel")
+
+
+def add_automation(doc, group, cx, cz):
+    add_box(doc, group, "PLC / I-O cabinet", (cx, 950, cz), (720, 1800, 520), "cabinet")
+    add_box(doc, group, "Cabinet HMI display", (cx, 1130, cz+270), (260, 360, 25), "water_dark")
+    add_box(doc, group, "Edge / server node", (cx-1050, 900, cz), (520, 1600, 650), "steel")
+
+
+def build_product(doc):
+    dims = (LENGTH, WIDTH, HEIGHT)
+    if MODEL == "turnkeyHub":
+        site = make_group(doc, "Campus / Site")
+        add_box(doc, site, "Campus site pad", (0, -30, 0), (72000, 120, 52000), "floor")
+        zones = [
+            ("Nursery", -25000, -15000, 12000, 8000, 3400),
+            ("Laboratory", -9000, -15000, 8000, 7000, 3400),
+            ("Engineering", 3000, -17000, 8000, 6000, 3200),
+            ("Grow Hall", 16000, -6000, 18000, 12000, 4200),
+            ("Warehouse", 29000, -17000, 12000, 9000, 4000),
+            ("Seed Bank", -29000, 1000, 6000, 5000, 3000),
+            ("Water Treatment", -19000, 14000, 9000, 8000, 3400),
+            ("Mixing Station", -6000, 14000, 8000, 6000, 3200),
+            ("Greenhouse", 17000, 15000, 22000, 10000, 5000),
+            ("Harvest Processing", 30000, 2000, 9000, 7000, 3600)
+        ]
+        for z in zones:
+            zg = make_group(doc, "Zone / " + z[0])
+            name,cx,cz,l,w,h=z
+            add_frame(doc,zg,name,cx,cz,l,w,h)
+            if name in ["Nursery", "Grow Hall"]:
+                add_rack(doc,zg,name+" / Rack 01",cx,cz,l*.42,w*.15,h,3)
+                add_rack(doc,zg,name+" / Rack 02",cx,cz+w*.22,l*.42,w*.15,h,3)
+            elif name=="Laboratory":
+                add_box(doc,zg,"Lab workbench",(cx,650,cz),(5600,180,850),"white")
+                add_cylinder(doc,zg,"Lab instrument marker",(cx+1200,1120,cz),220,500,"water")
+            elif name=="Engineering":
+                for i in range(3): add_box(doc,zg,"Server rack %02d"%(i+1),(cx-2200+i*2200,1150,cz),(650,2300,700),"steel")
+            elif name=="Warehouse" or name=="Harvest Processing":
+                for i in range(3): add_box(doc,zg,"Warehouse rack bay %02d"%(i+1),(cx-3000+i*3000,1250,cz),(2200,2500,800),"amber")
+            elif name=="Seed Bank":
+                for i in range(3): add_box(doc,zg,"Seed bank cabinet %02d"%(i+1),(cx-1600+i*1600,1150,cz),(850,2300,950),"shelf")
+            elif name=="Water Treatment":
+                add_water(doc,zg,cx,cz,h,6000)
+            elif name=="Mixing Station":
+                add_water(doc,zg,cx,cz,h,2000)
+            elif name=="Greenhouse":
+                for i in range(7): add_bed(doc,zg,"Greenhouse bed %02d"%(i+1),cx,cz-w*.36+i*w*.12,l*.82,800)
+        return
+
+    if MODEL == "containerHub":
+        group = make_group(doc,"Container Hub / 10 Modules")
+        length=12190.0;width=2440.0;height=2900.0
+        for row in range(2):
+            for col in range(5):
+                cx=-(5*length+4*280)/2+length/2+col*(length+280)
+                cz=(row-.5)*4200
+                cg=make_group(doc,"Container %02d"%(row*5+col+1))
+                add_frame(doc,cg,"40 HC container frame",cx,cz,length,width,height)
+                add_rack(doc,cg,"Container rack A",cx,cz-width*.22,length*.72,420,height,LEVELS)
+                add_rack(doc,cg,"Container rack B",cx,cz+width*.22,length*.72,420,height,LEVELS)
+        utility=make_group(doc,"Shared Utility")
+        add_water(doc,utility,0,5500,2900,5000)
+        add_automation(doc,utility,-5000,5500)
+        return
+
+    structure = make_group(doc,"01 Structure")
+    grow = make_group(doc,"02 Growing Equipment")
+    utility = make_group(doc,"03 Water / Climate / Automation")
+    add_frame(doc,structure,MODEL+" shell",0,0,LENGTH,WIDTH,HEIGHT)
+    if MODEL == "greenhouse" or MODEL == "vegetarium":
+        for i in range(max(2,int(GROW_UNITS))):
+            z=-WIDTH*.4 + WIDTH*.8*(i+0.5)/max(2,int(GROW_UNITS))
+            add_bed(doc,grow,"Grow bed %02d"%(i+1),0,z,LENGTH*.82,min(UNIT_WIDTH,WIDTH/GROW_UNITS*.82))
+    elif MODEL.startswith("chambers"):
+        cols=3 if MODEL in ["chambers3","chambers9"] else 5
+        rows=1 if MODEL=="chambers3" else 2
+        for c in range(1,cols): add_box(doc,structure,"Chamber partition X",(-LENGTH/2+LENGTH*c/cols,HEIGHT*.36,0),(80,HEIGHT*.72,WIDTH),"structure")
+        for r in range(1,rows): add_box(doc,structure,"Chamber partition Z",(0,HEIGHT*.36,-WIDTH/2+WIDTH*r/rows),(LENGTH,HEIGHT*.72,80),"structure")
+        for i in range(max(1,int(GROW_UNITS))):
+            col=i%cols;row=(i//cols)%rows
+            cx=-LENGTH/2+(col+.5)*LENGTH/cols
+            cz=-WIDTH/2+(row+.5)*WIDTH/rows+(i%2-.5)*WIDTH/rows*.35
+            add_rack(doc,grow,"Chamber rack %02d"%(i+1),cx,cz,(LENGTH/cols)*.68,min(UNIT_WIDTH,WIDTH/rows*.22),HEIGHT,LEVELS)
+    else:
+        rows=min(2,max(1,int(GROW_UNITS)));cols=int((max(1,int(GROW_UNITS))+rows-1)/rows)
+        for i in range(max(1,int(GROW_UNITS))):
+            col=i%cols;row=i//cols
+            cx=-LENGTH/2+(col+.5)*LENGTH/cols
+            cz=0 if rows==1 else -WIDTH*.24+row*WIDTH*.48
+            add_rack(doc,grow,"Rack %02d"%(i+1),cx,cz,min(LENGTH*.82,(LENGTH/cols)*.82),min(UNIT_WIDTH,WIDTH*.35),HEIGHT,LEVELS)
+    if MODEL == "container":
+        add_water(doc,utility,LENGTH*.32,-WIDTH*.32,HEIGHT,500)
+    else:
+        add_water(doc,utility,LENGTH*.34,-WIDTH*.34,HEIGHT,1500)
+    add_climate(doc,utility,-LENGTH*.34,WIDTH*.34,HEIGHT)
+    add_automation(doc,utility,-LENGTH*.35,-WIDTH*.32)
+
+
+def main():
+    # Preserve all existing user documents; create a new document instead of closing anything.
+    doc=App.newDocument("GoldenGreens_"+safe_name(MODEL))
+    build_product(doc)
+    doc.recompute()
+    os.makedirs(OUTPUT_DIR,exist_ok=True)
+    stamp=datetime.now().strftime("%Y%m%d_%H%M%S")
+    fcstd=os.path.join(OUTPUT_DIR,"GoldenGreens_"+safe_name(MODEL)+"_"+stamp+".FCStd")
+    doc.saveAs(fcstd)
+    if EXPORT_STEP:
+        try:
+            import Import
+            visible=[obj for obj in doc.Objects if obj.TypeId in ["Part::Box","Part::Cylinder"]]
+            Import.export(visible,os.path.join(OUTPUT_DIR,"GoldenGreens_"+safe_name(MODEL)+"_"+stamp+".step"))
+        except Exception as exc:
+            App.Console.PrintError("STEP export failed: %s\n" % exc)
+    try:
+        Gui.activeDocument().activeView().viewAxonometric()
+        Gui.activeDocument().activeView().fitAll()
+    except Exception: pass
+    App.Console.PrintMessage("Golden Greens model created: %s\n" % fcstd)
+
+main()

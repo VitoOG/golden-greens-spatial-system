@@ -1,0 +1,71 @@
+{
+  "schema_version": "0.1.0",
+  "record_status": "UNVERIFIED_TEMPLATE",
+  "equipment_model_id": "VENDOR-CATEGORY-MODEL-001",
+  "category": "pump | led | ahu | dehumidifier | reservoir | filter | plc | sensor | other",
+  "manufacturer": null,
+  "model": null,
+  "product_url": null,
+  "datasheet": {
+    "uri_or_local_path": null,
+    "document_revision": null,
+    "publication_date": null,
+    "sha256": null
+  },
+  "dimensions": {
+    "length_mm": null,
+    "width_mm": null,
+    "height_mm": null,
+    "mass_kg": null,
+    "connection_clearances_mm": null
+  },
+  "electrical": {
+    "input_power_W": null,
+    "rated_voltage_V": null,
+    "rated_current_A": null,
+    "phases": null,
+    "frequency_Hz": null,
+    "power_factor": null,
+    "starting_current_A": null,
+    "ip_rating": null
+  },
+  "performance": {
+    "flow_m3_h": null,
+    "head_m": null,
+    "pressure_kPa": null,
+    "airflow_m3_h": null,
+    "cooling_capacity_kW": null,
+    "heating_capacity_kW": null,
+    "dehumidification_kg_h": null,
+    "ppe_umol_J": null,
+    "ppf_umol_s": null
+  },
+  "interfaces": {
+    "fluid_connections": [],
+    "electrical_connections": [],
+    "signal_interfaces": [],
+    "network_interfaces": []
+  },
+  "operating_limits": {
+    "ambient_temperature_C": null,
+    "ambient_relative_humidity_pct": null,
+    "fluid_temperature_C": null,
+    "fluid_compatibility": [],
+    "duty_cycle": null
+  },
+  "commercial": {
+    "currency": "EUR",
+    "unit_price": null,
+    "lead_time_days": null,
+    "warranty_months": null,
+    "availability_checked_at": null
+  },
+  "provenance": {
+    "source_type": "vendor_datasheet | vendor_page | measurement | engineering_assumption",
+    "source_ref": null,
+    "verified_at": null,
+    "verified_by": null,
+    "verification_status": "UNVERIFIED",
+    "notes": []
+  }
+}

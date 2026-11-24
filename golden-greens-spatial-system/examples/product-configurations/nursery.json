@@ -1,0 +1,79 @@
+{
+  "schema_version": "0.1.0",
+  "config_id": "GG-CONFIG-NURSERY-BASE",
+  "status": "DRAFT_PRELIMINARY_CONCEPT",
+  "product_id": "nursery",
+  "product_code": "GG-NUR-001",
+  "title": "Клонарник / Nursery — base configuration",
+  "parameters": {
+    "length": 8,
+    "width": 6,
+    "height": 3,
+    "chambers": 1,
+    "units": 6,
+    "levels": 4,
+    "unitWidth": 0.62,
+    "ppfd": 140,
+    "ppe": 2.7,
+    "photoperiod": 18,
+    "ach": 4
+  },
+  "calculation_snapshot": {
+    "schema_version": "0.1.0",
+    "generated_at": "2026-11-17T18:16:03.104Z",
+    "status": "PRELIMINARY_CONCEPT",
+    "product": {
+      "id": "nursery",
+      "code": "GG-NUR-001",
+      "name": "Клонарник / Nursery",
+      "family": "Nursery"
+    },
+    "geometry": {
+      "length_m": 8,
+      "width_m": 6,
+      "height_m": 3,
+      "site_envelope_area_m2": 48,
+      "floor_area_m2": 48,
+      "gross_volume_m3": 144
+    },
+    "configuration": {
+      "chambers": 1,
+      "growing_units": 6,
+      "levels": 4,
+      "unit_width_m": 0.62,
+      "estimated_growing_surface_m2": 32.538
+    },
+    "assumptions": {
+      "ppfd_umol_m2_s": 140,
+      "ppe_umol_J": 2.7,
+      "photoperiod_h_day": 18,
+      "air_changes_per_hour": 4
+    },
+    "estimates": {
+      "led_electrical_power_kW": 1.687,
+      "led_energy_kWh_day": 30.368,
+      "airflow_m3_h": 576,
+      "known_auxiliary_nameplate_W": 380,
+      "known_load_estimate_kW": 2.067
+    },
+    "uncalculated": [
+      "HVAC cooling/heating capacity",
+      "dehumidification capacity",
+      "crop transpiration and water balance",
+      "pipe diameter / head loss / pump duty point",
+      "electrical protection, cable sizing and phase balance",
+      "structural loads and foundations",
+      "fire safety, egress and code compliance"
+    ],
+    "notes": [
+      "Geometry is a concept model, not a construction drawing.",
+      "Equipment ratings are placeholders until vendor datasheets and design conditions are entered.",
+      "Lighting power is an idealized estimate from growing surface × target PPFD ÷ PPE.",
+      "Airflow is gross volume × ACH; ACH must be justified by process and climate design."
+    ]
+  },
+  "notes": [
+    "Seed configuration only.",
+    "Replace equipment powers and process assumptions with project-specific verified data before engineering or quotation."
+  ]
+}

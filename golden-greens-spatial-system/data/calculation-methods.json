@@ -1,0 +1,59 @@
+{
+  "schema_version": "0.1.0",
+  "methods": [
+    {
+      "id": "GEOM-AREA-001",
+      "name": "Rectangular floor area",
+      "formula": "A_floor = L * W",
+      "inputs": [{"name":"L","unit":"m"},{"name":"W","unit":"m"}],
+      "output": {"name":"A_floor","unit":"m2"},
+      "status": "IMPLEMENTED",
+      "limitations": ["Rectangular envelope only", "No deductions for columns, walls, shafts or inaccessible zones"]
+    },
+    {
+      "id": "GEOM-VOL-001",
+      "name": "Gross rectangular volume",
+      "formula": "V_gross = L * W * H",
+      "inputs": [{"name":"L","unit":"m"},{"name":"W","unit":"m"},{"name":"H","unit":"m"}],
+      "output": {"name":"V_gross","unit":"m3"},
+      "status": "IMPLEMENTED",
+      "limitations": ["Gross envelope; not net usable volume", "No roof slope, internal partitions or wall thickness"]
+    },
+    {
+      "id": "GROW-AREA-001",
+      "name": "Productive rack area",
+      "formula": "A_grow = sum(rack_length * rack_width * usable_levels)",
+      "inputs": [{"name":"rack_length","unit":"m"},{"name":"rack_width","unit":"m"},{"name":"usable_levels","unit":"count"}],
+      "output": {"name":"A_grow","unit":"m2"},
+      "status": "IMPLEMENTED_APPROXIMATE",
+      "limitations": ["Current layouts use simplified rack placement", "No canopy coverage or crop spacing model", "Does not verify light access or service clearance"]
+    },
+    {
+      "id": "LIGHT-POWER-001",
+      "name": "Idealized LED electrical power estimate",
+      "formula": "P_LED_W = A_grow_m2 * PPFD_umol_m2_s / PPE_umol_J",
+      "inputs": [{"name":"A_grow","unit":"m2"},{"name":"PPFD","unit":"umol/(m2*s)"},{"name":"PPE","unit":"umol/J"}],
+      "output": {"name":"P_LED","unit":"W"},
+      "status": "IMPLEMENTED_PRELIMINARY",
+      "limitations": ["No spatial PPFD distribution", "No optical losses or uniformity calculation", "No driver efficiency or fixture layout", "Manufacturer performance data required"]
+    },
+    {
+      "id": "LIGHT-ENERGY-001",
+      "name": "LED daily energy estimate",
+      "formula": "E_LED_kWh_day = P_LED_W * photoperiod_h / 1000",
+      "inputs": [{"name":"P_LED","unit":"W"},{"name":"photoperiod","unit":"h/day"}],
+      "output": {"name":"E_LED","unit":"kWh/day"},
+      "status": "IMPLEMENTED_PRELIMINARY",
+      "limitations": ["Assumes constant electrical input during photoperiod", "No dimming or daylight harvesting"]
+    },
+    {
+      "id": "VENT-AIR-001",
+      "name": "Air change volumetric indicator",
+      "formula": "Q_m3_h = V_gross_m3 * ACH_1_h",
+      "inputs": [{"name":"V_gross","unit":"m3"},{"name":"ACH","unit":"1/h"}],
+      "output": {"name":"Q","unit":"m3/h"},
+      "status": "IMPLEMENTED_INDICATOR_ONLY",
+      "limitations": ["Not a fan or AHU selection", "No heat/moisture balance", "ACH requires process justification"]
+    }
+  ]
+}

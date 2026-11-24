@@ -1,0 +1,79 @@
+{
+  "schema_version": "0.1.0",
+  "config_id": "GG-CONFIG-GROWROOM-BASE",
+  "status": "DRAFT_PRELIMINARY_CONCEPT",
+  "product_id": "growroom",
+  "product_code": "GG-GRM-001",
+  "title": "Growroom — base configuration",
+  "parameters": {
+    "length": 6,
+    "width": 4,
+    "height": 3,
+    "chambers": 1,
+    "units": 4,
+    "levels": 3,
+    "unitWidth": 0.7,
+    "ppfd": 260,
+    "ppe": 2.7,
+    "photoperiod": 18,
+    "ach": 5
+  },
+  "calculation_snapshot": {
+    "schema_version": "0.1.0",
+    "generated_at": "2026-11-17T18:16:03.104Z",
+    "status": "PRELIMINARY_CONCEPT",
+    "product": {
+      "id": "growroom",
+      "code": "GG-GRM-001",
+      "name": "Growroom",
+      "family": "Indoor systems"
+    },
+    "geometry": {
+      "length_m": 6,
+      "width_m": 4,
+      "height_m": 3,
+      "site_envelope_area_m2": 24,
+      "floor_area_m2": 24,
+      "gross_volume_m3": 72
+    },
+    "configuration": {
+      "chambers": 1,
+      "growing_units": 4,
+      "levels": 3,
+      "unit_width_m": 0.7,
+      "estimated_growing_surface_m2": 20.664
+    },
+    "assumptions": {
+      "ppfd_umol_m2_s": 260,
+      "ppe_umol_J": 2.7,
+      "photoperiod_h_day": 18,
+      "air_changes_per_hour": 5
+    },
+    "estimates": {
+      "led_electrical_power_kW": 1.99,
+      "led_energy_kWh_day": 35.818,
+      "airflow_m3_h": 360,
+      "known_auxiliary_nameplate_W": 490,
+      "known_load_estimate_kW": 2.48
+    },
+    "uncalculated": [
+      "HVAC cooling/heating capacity",
+      "dehumidification capacity",
+      "crop transpiration and water balance",
+      "pipe diameter / head loss / pump duty point",
+      "electrical protection, cable sizing and phase balance",
+      "structural loads and foundations",
+      "fire safety, egress and code compliance"
+    ],
+    "notes": [
+      "Geometry is a concept model, not a construction drawing.",
+      "Equipment ratings are placeholders until vendor datasheets and design conditions are entered.",
+      "Lighting power is an idealized estimate from growing surface × target PPFD ÷ PPE.",
+      "Airflow is gross volume × ACH; ACH must be justified by process and climate design."
+    ]
+  },
+  "notes": [
+    "Seed configuration only.",
+    "Replace equipment powers and process assumptions with project-specific verified data before engineering or quotation."
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "schema_version": "0.1.0",
+  "config_id": "GG-CONFIG-VEGETARIUM-BASE",
+  "status": "DRAFT_PRELIMINARY_CONCEPT",
+  "product_id": "vegetarium",
+  "product_code": "GG-VEG-001",
+  "title": "Вегетарий — base configuration",
+  "parameters": {
+    "length": 20,
+    "width": 8,
+    "height": 4,
+    "chambers": 1,
+    "units": 10,
+    "levels": 1,
+    "unitWidth": 0.9,
+    "ppfd": 180,
+    "ppe": 2.7,
+    "photoperiod": 14,
+    "ach": 3
+  },
+  "calculation_snapshot": {
+    "schema_version": "0.1.0",
+    "generated_at": "2026-11-17T18:16:03.104Z",
+    "status": "PRELIMINARY_CONCEPT",
+    "product": {
+      "id": "vegetarium",
+      "code": "GG-VEG-001",
+      "name": "Вегетарий",
+      "family": "Protected cultivation"
+    },
+    "geometry": {
+      "length_m": 20,
+      "width_m": 8,
+      "height_m": 4,
+      "site_envelope_area_m2": 160,
+      "floor_area_m2": 160,
+      "gross_volume_m3": 640
+    },
+    "configuration": {
+      "chambers": 1,
+      "growing_units": 10,
+      "levels": 1,
+      "unit_width_m": 0.9,
+      "estimated_growing_surface_m2": 79.35
+    },
+    "assumptions": {
+      "ppfd_umol_m2_s": 180,
+      "ppe_umol_J": 2.7,
+      "photoperiod_h_day": 14,
+      "air_changes_per_hour": 3
+    },
+    "estimates": {
+      "led_electrical_power_kW": 5.29,
+      "led_energy_kWh_day": 74.06,
+      "airflow_m3_h": 1920,
+      "known_auxiliary_nameplate_W": 690,
+      "known_load_estimate_kW": 5.98
+    },
+    "uncalculated": [
+      "HVAC cooling/heating capacity",
+      "dehumidification capacity",
+      "crop transpiration and water balance",
+      "pipe diameter / head loss / pump duty point",
+      "electrical protection, cable sizing and phase balance",
+      "structural loads and foundations",
+      "fire safety, egress and code compliance"
+    ],
+    "notes": [
+      "Geometry is a concept model, not a construction drawing.",
+      "Equipment ratings are placeholders until vendor datasheets and design conditions are entered.",
+      "Lighting power is an idealized estimate from growing surface × target PPFD ÷ PPE.",
+      "Airflow is gross volume × ACH; ACH must be justified by process and climate design."
+    ]
+  },
+  "notes": [
+    "Seed configuration only.",
+    "Replace equipment powers and process assumptions with project-specific verified data before engineering or quotation."
+  ]
+}

@@ -1,0 +1,181 @@
+{
+  "schema_version": "0.1.0",
+  "zones": [
+    {
+      "id": "seed-bank",
+      "name": "Seed Bank",
+      "zone_type": "laboratory",
+      "functions": [
+        "seed-storage",
+        "inventory",
+        "collection-preservation"
+      ],
+      "interfaces": [
+        "climate",
+        "power",
+        "data"
+      ]
+    },
+    {
+      "id": "laboratory",
+      "name": "Laboratory",
+      "zone_type": "laboratory",
+      "functions": [
+        "water-analysis",
+        "solution-testing",
+        "phenotyping"
+      ],
+      "interfaces": [
+        "water",
+        "drain",
+        "power",
+        "data",
+        "ventilation"
+      ]
+    },
+    {
+      "id": "nursery",
+      "name": "Nursery / Clone room",
+      "zone_type": "production",
+      "functions": [
+        "propagation",
+        "germination",
+        "early-growth"
+      ],
+      "interfaces": [
+        "water",
+        "power",
+        "climate",
+        "data"
+      ]
+    },
+    {
+      "id": "vegetarium",
+      "name": "Vegetarium / Greenhouse",
+      "zone_type": "production",
+      "functions": [
+        "protected-cultivation",
+        "growing-beds"
+      ],
+      "interfaces": [
+        "water",
+        "power",
+        "climate",
+        "data"
+      ]
+    },
+    {
+      "id": "grow-hall",
+      "name": "Grow Hall",
+      "zone_type": "production",
+      "functions": [
+        "indoor-growing",
+        "multi-tier-racks"
+      ],
+      "interfaces": [
+        "water",
+        "power",
+        "climate",
+        "data"
+      ]
+    },
+    {
+      "id": "chamber-block",
+      "name": "Chamber Block",
+      "zone_type": "production",
+      "functions": [
+        "isolated-growth-chambers",
+        "process-separation"
+      ],
+      "interfaces": [
+        "water",
+        "power",
+        "climate",
+        "data"
+      ]
+    },
+    {
+      "id": "water-treatment",
+      "name": "Water Treatment",
+      "zone_type": "utility",
+      "functions": [
+        "filtration",
+        "storage",
+        "water-conditioning"
+      ],
+      "interfaces": [
+        "water-in",
+        "water-out",
+        "drain",
+        "power",
+        "data"
+      ]
+    },
+    {
+      "id": "mixing-station",
+      "name": "Mixing Station",
+      "zone_type": "utility",
+      "functions": [
+        "nutrient-mixing",
+        "dosing",
+        "recirculation"
+      ],
+      "interfaces": [
+        "water",
+        "nutrient",
+        "drain",
+        "power",
+        "data"
+      ]
+    },
+    {
+      "id": "warehouse",
+      "name": "Warehouse / Packing",
+      "zone_type": "logistics",
+      "functions": [
+        "storage",
+        "packing",
+        "dispatch"
+      ],
+      "interfaces": [
+        "power",
+        "data",
+        "transport"
+      ]
+    },
+    {
+      "id": "engineering",
+      "name": "Engineering / Server",
+      "zone_type": "control",
+      "functions": [
+        "plc",
+        "scada",
+        "edge",
+        "network-management"
+      ],
+      "interfaces": [
+        "power",
+        "ot-network",
+        "it-network",
+        "data"
+      ]
+    },
+    {
+      "id": "harvest-processing",
+      "name": "Harvest / Processing",
+      "zone_type": "processing",
+      "functions": [
+        "harvest",
+        "sorting",
+        "post-harvest"
+      ],
+      "interfaces": [
+        "water",
+        "power",
+        "climate",
+        "data",
+        "transport"
+      ]
+    }
+  ]
+}

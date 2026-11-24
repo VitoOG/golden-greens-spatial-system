@@ -1,0 +1,79 @@
+{
+  "schema_version": "0.1.0",
+  "config_id": "GG-CONFIG-CHAMBERS10-BASE",
+  "status": "DRAFT_PRELIMINARY_CONCEPT",
+  "product_id": "chambers10",
+  "product_code": "GG-CHM-010",
+  "title": "10-камерный корпус — base configuration",
+  "parameters": {
+    "length": 24,
+    "width": 12,
+    "height": 3.2,
+    "chambers": 10,
+    "units": 20,
+    "levels": 3,
+    "unitWidth": 0.65,
+    "ppfd": 250,
+    "ppe": 2.7,
+    "photoperiod": 18,
+    "ach": 5
+  },
+  "calculation_snapshot": {
+    "schema_version": "0.1.0",
+    "generated_at": "2026-11-17T18:16:03.105Z",
+    "status": "PRELIMINARY_CONCEPT",
+    "product": {
+      "id": "chambers10",
+      "code": "GG-CHM-010",
+      "name": "10-камерный корпус",
+      "family": "Chamber systems"
+    },
+    "geometry": {
+      "length_m": 24,
+      "width_m": 12,
+      "height_m": 3.2,
+      "site_envelope_area_m2": 288,
+      "floor_area_m2": 288,
+      "gross_volume_m3": 921.6
+    },
+    "configuration": {
+      "chambers": 10,
+      "growing_units": 20,
+      "levels": 3,
+      "unit_width_m": 0.65,
+      "estimated_growing_surface_m2": 127.296
+    },
+    "assumptions": {
+      "ppfd_umol_m2_s": 250,
+      "ppe_umol_J": 2.7,
+      "photoperiod_h_day": 18,
+      "air_changes_per_hour": 5
+    },
+    "estimates": {
+      "led_electrical_power_kW": 11.787,
+      "led_energy_kWh_day": 212.16,
+      "airflow_m3_h": 4608,
+      "known_auxiliary_nameplate_W": 2250,
+      "known_load_estimate_kW": 14.037
+    },
+    "uncalculated": [
+      "HVAC cooling/heating capacity",
+      "dehumidification capacity",
+      "crop transpiration and water balance",
+      "pipe diameter / head loss / pump duty point",
+      "electrical protection, cable sizing and phase balance",
+      "structural loads and foundations",
+      "fire safety, egress and code compliance"
+    ],
+    "notes": [
+      "Geometry is a concept model, not a construction drawing.",
+      "Equipment ratings are placeholders until vendor datasheets and design conditions are entered.",
+      "Lighting power is an idealized estimate from growing surface × target PPFD ÷ PPE.",
+      "Airflow is gross volume × ACH; ACH must be justified by process and climate design."
+    ]
+  },
+  "notes": [
+    "Seed configuration only.",
+    "Replace equipment powers and process assumptions with project-specific verified data before engineering or quotation."
+  ]
+}

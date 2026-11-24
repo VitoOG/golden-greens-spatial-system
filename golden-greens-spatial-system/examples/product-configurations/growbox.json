@@ -1,0 +1,79 @@
+{
+  "schema_version": "0.1.0",
+  "config_id": "GG-CONFIG-GROWBOX-BASE",
+  "status": "DRAFT_PRELIMINARY_CONCEPT",
+  "product_id": "growbox",
+  "product_code": "GG-BOX-001",
+  "title": "Growbox — base configuration",
+  "parameters": {
+    "length": 1.2,
+    "width": 1.2,
+    "height": 2.2,
+    "chambers": 1,
+    "units": 1,
+    "levels": 2,
+    "unitWidth": 0.72,
+    "ppfd": 250,
+    "ppe": 2.7,
+    "photoperiod": 18,
+    "ach": 8
+  },
+  "calculation_snapshot": {
+    "schema_version": "0.1.0",
+    "generated_at": "2026-11-17T18:16:03.104Z",
+    "status": "PRELIMINARY_CONCEPT",
+    "product": {
+      "id": "growbox",
+      "code": "GG-BOX-001",
+      "name": "Growbox",
+      "family": "Compact systems"
+    },
+    "geometry": {
+      "length_m": 1.2,
+      "width_m": 1.2,
+      "height_m": 2.2,
+      "site_envelope_area_m2": 1.44,
+      "floor_area_m2": 1.44,
+      "gross_volume_m3": 3.168
+    },
+    "configuration": {
+      "chambers": 1,
+      "growing_units": 1,
+      "levels": 2,
+      "unit_width_m": 0.72,
+      "estimated_growing_surface_m2": 0.827
+    },
+    "assumptions": {
+      "ppfd_umol_m2_s": 250,
+      "ppe_umol_J": 2.7,
+      "photoperiod_h_day": 18,
+      "air_changes_per_hour": 8
+    },
+    "estimates": {
+      "led_electrical_power_kW": 0.077,
+      "led_energy_kWh_day": 1.378,
+      "airflow_m3_h": 25.34,
+      "known_auxiliary_nameplate_W": 150,
+      "known_load_estimate_kW": 0.227
+    },
+    "uncalculated": [
+      "HVAC cooling/heating capacity",
+      "dehumidification capacity",
+      "crop transpiration and water balance",
+      "pipe diameter / head loss / pump duty point",
+      "electrical protection, cable sizing and phase balance",
+      "structural loads and foundations",
+      "fire safety, egress and code compliance"
+    ],
+    "notes": [
+      "Geometry is a concept model, not a construction drawing.",
+      "Equipment ratings are placeholders until vendor datasheets and design conditions are entered.",
+      "Lighting power is an idealized estimate from growing surface × target PPFD ÷ PPE.",
+      "Airflow is gross volume × ACH; ACH must be justified by process and climate design."
+    ]
+  },
+  "notes": [
+    "Seed configuration only.",
+    "Replace equipment powers and process assumptions with project-specific verified data before engineering or quotation."
+  ]
+}

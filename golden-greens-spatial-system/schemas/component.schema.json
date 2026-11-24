@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goldengreens.example/schemas/component.schema.json",
+  "title": "Golden Greens Component Profile",
+  "type": "object",
+  "required": ["id", "name", "group", "unit", "purpose"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+    "name": {"type": "string"},
+    "group": {"enum": ["structure", "grow", "water", "climate", "automation", "logistics", "laboratory"]},
+    "unit": {"type": "string"},
+    "purpose": {"type": "string"},
+    "manufacturer": {"type": ["string", "null"]},
+    "model": {"type": ["string", "null"]},
+    "datasheet_url": {"type": ["string", "null"], "format": "uri"},
+    "rated_power_W": {"type": ["number", "null"], "minimum": 0},
+    "dimensions_m": {"type": ["object", "null"]}
+  },
+  "additionalProperties": true
+}
