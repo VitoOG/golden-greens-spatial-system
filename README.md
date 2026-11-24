@@ -108,3 +108,12 @@ See [`docs/ROADMAP.md`](docs/ROADMAP.md) and [`docs/PROJECT_STATUS.md`](docs/PRO
 ## Language
 
 The original Russian project description is preserved in [`README.ru.md`](README.ru.md).
+
+## Technical audit
+
+Repository-level technical audit reports for the reviewed MVP 0.1 revision:
+
+- [Technical Audit Report — English](docs/TECHNICAL_AUDIT_EN.md)
+- [Informe de auditoría técnica — Español](docs/TECHNICAL_AUDIT_ES.md)
+
+The reports distinguish verified repository behaviour, CI evidence, engineering limitations, and recommended development priorities. They are assessments of the reviewed revision, not certification or approval for construction, procurement, or fabrication.
