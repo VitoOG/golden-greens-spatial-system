@@ -54,3 +54,12 @@ Consulta [README.md](README.md) para la documentación técnica en inglés y [RE
 ## Verificación de la versión española
 
 La comprobación automatizada `node scripts/test_spanish_localization.mjs` valida la ruta `/es/`, los 11 productos, la correspondencia de identificadores y parámetros con el catálogo original, la biblioteca de componentes y los nombres y descripciones de los objetos de la escena 3D.
+
+## Auditoría técnica
+
+Informes de auditoría técnica del repositorio para la revisión MVP 0.1 examinada:
+
+- [Technical Audit Report — English](docs/TECHNICAL_AUDIT_EN.md)
+- [Informe de auditoría técnica — Español](docs/TECHNICAL_AUDIT_ES.md)
+
+Los informes distinguen el comportamiento verificado del repositorio, las evidencias de CI, las limitaciones de ingeniería y las prioridades de desarrollo recomendadas. Son evaluaciones de la revisión examinada, no una certificación ni una aprobación para construcción, compras o fabricación.
