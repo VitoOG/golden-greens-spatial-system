@@ -55,3 +55,5 @@ Consulta [README.md](README.md) para la documentación técnica en inglés y [RE
 
 La comprobación automatizada `node scripts/test_spanish_localization.mjs` valida la ruta `/es/`, los 11 productos, la correspondencia de identificadores y parámetros con el catálogo original, la biblioteca de componentes y los nombres y descripciones de los objetos de la escena 3D.
 
+
+<!-- Spanish localization CI checkpoint -->
