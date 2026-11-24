@@ -30,7 +30,7 @@ function renderCatalog(filter='') {
   const list=PRODUCTS.filter(p=>[p.name,p.short,p.category,p.description,p.code].join(' ').toLowerCase().includes(query));
   for(const product of list){
     const button=document.createElement('button');button.type='button';button.className='product-card'+(product.id===state.product.id?' selected':'');
-    button.innerHTML=`<span class="product-icon">${escapeHTML(product.icon)}</span><span><strong>${escapeHTML(product.name)}</strong><small>${escapeHTML(product.category)} · ${format(product.dimensions.length,1)} × ${format(product.dimensions.width,1)} × ${format(product.dimensions.height,1)} м</small></span><span class="product-chevron">›</span>`;
+    button.innerHTML=`<span class="product-icon">${escapeHTML(product.icon)}</span><span><strong>${escapeHTML(product.name)}</strong><small>${escapeHTML(product.category)} · ${format(product.dimensions.length,1)} × ${format(product.dimensions.width,1)} × ${format(product.dimensions.height,1)} m</small></span><span class="product-chevron">›</span>`;
     button.addEventListener('click',()=>selectProduct(product.id));root.appendChild(button);
   }
   $('productCount').textContent=String(PRODUCTS.length).padStart(2,'0');
@@ -115,7 +115,27 @@ function renderObjectInspector(object) {
   const root=$('objectInspector');
   if(!object){root.innerHTML=`<span class="eyebrow">${LANG === 'es' ? 'PERFIL DEL OBJETO' : 'OBJECT PROFILE'}</span><strong>${t('Выбери компонент в 3D-сцене')}</strong><p>${t('Нажми на объект. Здесь появятся назначение, габариты и инженерные свойства выбранного элемента.')}</p>`;return;}
   const entries=Object.entries(object.spec||{}).slice(0,10);
-  const detail=entries.map(([k,v])=>`<div><dt>${escapeHTML(k.replaceAll('_',' '))}</dt><dd>${escapeHTML(typeof v==='object'?JSON.stringify(v):String(v))}</dd></div>`).join('');
+  const specLabels = {
+    length_m:'Longitud (m)',width_m:'Anchura (m)',height_m:'Altura (m)',floor_area_m2:'Superficie de suelo (m²)',gross_volume_m3:'Volumen bruto (m³)',
+    construction:'Construcción',rack_length_m:'Longitud de estantería (m)',rack_depth_m:'Profundidad de estantería (m)',levels:'Niveles',
+    growing_surface_m2:'Superficie de cultivo (m²)',fixture_type:'Tipo de luminaria',design_input:'Parámetros de diseño',
+    visual_instances:'Elementos visuales',nominal_volume_l:'Volumen nominal (L)',visual_height_m:'Altura visual (m)',visual_diameter_m:'Diámetro visual (m)',
+    fluid:'Fluido',rated_power_W:'Potencia nominal (W)',flow_rate_m3_h:'Caudal (m³/h)',head_m:'Altura manométrica (m)',
+    process:'Proceso',sensors:'Sensores',dosing_channels:'Canales de dosificación',pipe_material:'Material de tubería',diameter_mm:'Diámetro (mm)',
+    design_flow_m3_h:'Caudal de diseño (m³/h)',cooling_capacity_kW:'Capacidad frigorífica (kW)',dehumidification_kg_h:'Deshumidificación (kg/h)',
+    airflow_m3_h:'Caudal de aire (m³/h)',installed_power_W:'Potencia instalada (W)',design_airflow_m3_h:'Caudal de aire de diseño (m³/h)',
+    air_velocity_m_s:'Velocidad del aire (m/s)',plc:'PLC',remote_io:'E/S remotas',power_W:'Potencia (W)',io_points:'Puntos de E/S',
+    network:'Red',role:'Función',services:'Servicios',network_topology:'Topología de red',chambers:'Cámaras',grid:'Distribución',
+    site_length_m:'Longitud del terreno (m)',site_width_m:'Anchura del terreno (m)',site_area_m2:'Superficie del terreno (m²)',
+    road_width_m:'Anchura del vial (m)',bench_length_m:'Longitud de la mesa (m)',utilities:'Servicios',
+    rack_count:'Número de bastidores',ups:'SAI / UPS',storage_policy:'Política de almacenamiento',climate_control:'Control climático',
+    channels:'Canales',pH_EC:'Control de pH/EC',container_count:'Número de contenedores',clear_width_m:'Anchura libre (m)'
+  };
+  const detail=entries.map(([k,v])=>{
+    const label=LANG === 'es' ? (specLabels[k]||k.replaceAll('_',' ')) : k.replaceAll('_',' ');
+    const raw=typeof v==='object'?(Array.isArray(v)?v.join(', '):JSON.stringify(v)):String(v);
+    return `<div><dt>${escapeHTML(label)}</dt><dd>${escapeHTML(t(raw))}</dd></div>`;
+  }).join('');
   root.innerHTML=`<span class="eyebrow">${escapeHTML(t(object.group).toUpperCase())} · ${escapeHTML(object.id)}</span><strong>${escapeHTML(t(object.name))}</strong><p>${escapeHTML(t(object.description||''))}</p>${detail?`<dl>${detail}</dl>`:''}`;
 }
 
@@ -189,15 +209,15 @@ async function importJSON(file) {
 function exportBOM(){
   const v=state.values,met=getCalculationMetrics(state.product,v),p=state.product;
   const rows=[['item_id','item','quantity','unit','power_W','status'],
-    ['SHELL-001','Оболочка / каркас',1,'комплект','', 'геометрия концептуальная'],
-    ['GROW-001','Стеллажи / грядки',v.units,'шт.','', 'параметрическая конфигурация'],
-    ['LED-EST','LED установленная мощность (оценка)',format(met.ledPowerW,1),'W',format(met.ledPowerW,1),'оценка PPFD/PPE'],
-    ['WATER-001','Бак воды / раствора',1,'шт.','',`номинал ${p.waterTankL||0} л — placeholder`],
-    ['PUMP-001','Насосная группа',1,'комплект',p.componentPowers?.pump||0,'требуется рабочая точка'],
-    ['FAN-001','Циркуляция / вентиляторы',1,'комплект',p.componentPowers?.circulation||0,'условная установленная мощность'],
-    ['CTRL-001','Управление / PLC / I/O',1,'комплект',p.componentPowers?.controls||0,'архитектурный placeholder'],
-    ['HVAC-TBD','HVAC / осушение',1,'комплект','','не рассчитано'],
-    ['PIPE-TBD','Трубопроводы / арматура',1,'комплект','','не рассчитано']
+    ['SHELL-001',t('Оболочка / каркас'),1,t('комплект'),'',t('геометрия концептуальная')],
+    ['GROW-001',t('Стеллажи / грядки'),v.units,t('шт.'),'',t('параметрическая конфигурация')],
+    ['LED-EST',t('LED установленная мощность (оценка)'),format(met.ledPowerW,1),'W',format(met.ledPowerW,1),t('оценка PPFD/PPE')],
+    ['WATER-001',t('Бак воды / раствора'),1,t('шт.'),'',`${t('номинал')} ${p.waterTankL||0} ${t('л')} — ${t('placeholder')}`],
+    ['PUMP-001',t('Насосная группа'),1,t('комплект'),p.componentPowers?.pump||0,t('требуется рабочая точка')],
+    ['FAN-001',t('Циркуляция / вентиляторы'),1,t('комплект'),p.componentPowers?.circulation||0,t('условная установленная мощность')],
+    ['CTRL-001',t('Управление / PLC / I/O'),1,t('комплект'),p.componentPowers?.controls||0,t('архитектурный placeholder')],
+    ['HVAC-TBD',t('HVAC / осушение'),1,t('комплект'),' ',t('не рассчитано')],
+    ['PIPE-TBD',t('Трубопроводы / арматура'),1,t('комплект'),' ',t('не рассчитано')]
   ];
   const csv=rows.map(row=>row.map(cell=>`"${String(cell).replaceAll('"','""')}"`).join(';')).join('\r\n');
   downloadBlob(`${p.id}-bom.csv`,'\uFEFF'+csv,'text/csv;charset=utf-8');
