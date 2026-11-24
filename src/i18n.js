@@ -120,7 +120,8 @@ const ES = {
 const FRAGMENTS = [
   ["Камера ", "Cámara "], ["стеллаж", "estantería"], ["Стеллаж", "Estantería"],
   ["Грядка", "Bancal"], ["Контейнер", "Contenedor"], ["растения", "plantas"],
-  ["посадки", "cultivos"], ["оболочка", "envolvente"]
+  ["посадки", "cultivos"], ["оболочка", "envolvente"],
+  ["базовая компоновочная геометрия без расчёта несущей способности и узлов соединения.", "geometría conceptual de referencia; no incluye el cálculo de capacidad portante ni el diseño de uniones."]
 ];
 
 export function t(value) {
