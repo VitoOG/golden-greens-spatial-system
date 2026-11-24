@@ -113,7 +113,8 @@ const ES = {
   "Визуальная компоновка хранения семян. Температурные/влажностные режимы, герметичность, инвентаризация и резервирование не определены.": "Disposición visual para el almacenamiento de semillas. No se han definido los rangos de temperatura y humedad, la estanqueidad, el inventario ni la redundancia.",
   "Модель технологической зоны дозирования. Рабочие объёмы, химическая совместимость, локализация проливов и автоматика требуют отдельной проработки.": "Modelo de la zona de dosificación. Los volúmenes de operación, la compatibilidad química, la contención de derrames y la automatización requieren un diseño específico.",
   "Сводная зона инженерных коммуникаций и автоматики. Фактические трассы, мощности и резервирование отсутствуют.": "Zona general de servicios técnicos y automatización. Las rutas reales, las capacidades y la redundancia aún no están definidas.",
-  "Компоновочный проход между линиями контейнеров.": "Pasillo de servicio entre las filas de contenedores."
+  "Компоновочный проход между линиями контейнеров.": "Pasillo de servicio entre las filas de contenedores.",
+  "базовая компоновочная геометрия без расчёта несущей способности и узлов соединения.": "geometría conceptual de referencia; no incluye el cálculo de capacidad portante ni el diseño de uniones."
 };
 
 const FRAGMENTS = [
