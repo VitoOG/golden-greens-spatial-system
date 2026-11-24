@@ -1,4 +1,5 @@
-import { PRODUCTS, GROUPS, createInitialState } from './catalog.js';
+import { LANG, t } from './i18n.js';
+const { PRODUCTS, GROUPS, createInitialState } = LANG === 'es' ? await import('./catalog.es.js') : await import('./catalog.js');
 import { buildScene, getCalculationMetrics, createProductReport, exportSceneOBJ } from './scene.js';
 import { createRenderer, projectPoint } from './gl.js';
 
@@ -13,7 +14,7 @@ function safeNumber(id, fallback) {
   return Number.isFinite(value) ? value : fallback;
 }
 function clamp(n,min,max){return Math.min(max,Math.max(min,n));}
-function format(n,d=2){return Number(n||0).toLocaleString('ru-RU',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function format(n,d=2){return Number(n||0).toLocaleString(LANG === 'es' ? 'es-ES' : 'ru-RU',{minimumFractionDigits:d,maximumFractionDigits:d});}
 function escapeHTML(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
 function setInputs() {
@@ -33,7 +34,7 @@ function renderCatalog(filter='') {
     button.addEventListener('click',()=>selectProduct(product.id));root.appendChild(button);
   }
   $('productCount').textContent=String(PRODUCTS.length).padStart(2,'0');
-  if(!list.length)root.innerHTML='<div class="form-note" style="padding:12px">Совпадений нет.</div>';
+  if(!list.length)root.innerHTML=`<div class="form-note" style="padding:12px">${t('Совпадений нет.')}</div>`;
 }
 
 function renderLayerControls() {
@@ -50,7 +51,7 @@ function selectProduct(id) {
   const product=PRODUCTS.find(p=>p.id===id);if(!product)return;
   state.product=product;state.values=createInitialState(product);state.selectedId=null;
   $('viewportTitle').textContent=product.name;$('viewportSubtitle').textContent=product.description;
-  $('modeTag').textContent=product.type==='campus'?'CAMPUS OVERVIEW':'PRODUCT MODEL';
+  $('modeTag').textContent=product.type==='campus'?(LANG === 'es' ? 'VISTA DEL CAMPUS' : 'CAMPUS OVERVIEW'):(LANG === 'es' ? 'MODELO DE PRODUCTO' : 'PRODUCT MODEL');
   setInputs();renderCatalog($('catalogSearch').value);buildCurrentScene();fitCamera();
   updateSelectedBar(null);updateMetrics();renderObjectInspector(null);
 }
@@ -58,7 +59,7 @@ function selectProduct(id) {
 function buildCurrentScene() {
   state.scene=buildScene(state.product,state.values);
   const count=state.scene.objects.filter(o=>o.group!=='grid').length;
-  $('objectCountChip').textContent=`${count} OBJECTS`;
+  $('objectCountChip').textContent=`${count} ${LANG === 'es' ? 'OBJETOS' : 'OBJECTS'}`;
   state.selectedId=null;
   draw();
 }
@@ -84,8 +85,8 @@ function draw() {
 
 function updateMetrics() {
   const p=state.product,v=state.values,r=getCalculationMetrics(p,v);
-  $('floorAreaLabel').textContent=p.type==='campus'?'Суммарная площадь зданий':p.type==='containerHub'?'Площадь контейнеров':'Площадь пола';
-  $('grossVolumeLabel').textContent=p.type==='campus'?'Суммарный объём зданий':p.type==='containerHub'?'Объём контейнеров':'Валовый объём';
+  $('floorAreaLabel').textContent=p.type==='campus'?t('Суммарная площадь зданий'):p.type==='containerHub'?t('Площадь контейнеров'):t('Площадь пола');
+  $('grossVolumeLabel').textContent=p.type==='campus'?t('Суммарный объём зданий'):p.type==='containerHub'?t('Объём контейнеров'):t('Валовый объём');
   $('floorAreaMetric').textContent=format(r.floorArea,1);
   $('grossVolumeMetric').textContent=format(r.grossVolume,1);
   $('growAreaMetric').textContent=format(r.growArea,1);
@@ -96,26 +97,26 @@ function updateMetrics() {
   const warnings=[];
   if(p.type==='containerHub'){
     const count=Math.max(1,Math.round(v.chambers)),rows=Math.ceil(count/5),cols=Math.min(5,count),minL=cols*12.19+Math.max(0,cols-1)*.05,minW=rows*2.44+Math.max(0,rows-1)*.8;
-    if(v.length<minL)warnings.push(`Длина площадки меньше компоновочного минимума ${format(minL,2)} м.`);
-    if(v.width<minW)warnings.push(`Ширина площадки меньше ориентировочного минимума ${format(minW,2)} м.`);
+    if(v.length<minL)warnings.push(`${t('Длина площадки меньше компоновочного минимума')}: ${format(minL,2)} m.`);
+    if(v.width<minW)warnings.push(`${t('Ширина площадки меньше ориентировочного минимума')}: ${format(minW,2)} m.`);
   }
-  if(p.type==='campus'&&(v.length<72||v.width<52))warnings.push('Зоны кампуса пока расположены по фиксированному демонстрационному генплану и могут выйти за заданную границу участка.');
-  if(p.type==='chambers'&&v.length/Math.max(1,p.chamberCols||1)<2.5)warnings.push('Проверь полезную длину секции и сервисные проходы камер.');
-  const base='LED — идеализированная оценка PPFD/PPE; воздух — валовый объём × ACH. Не рассчитаны HVAC, осушение, влаговыделение, гидравлика, кабели, защита и конструкции.';
-  $('calcStatus').textContent=(warnings.length?'Проверить: '+warnings.join(' '):'Предварительная оценка. ')+base;
+  if(p.type==='campus'&&(v.length<72||v.width<52))warnings.push(t('Зоны кампуса пока расположены по фиксированному демонстрационному генплану и могут выйти за заданную границу участка.'));
+  if(p.type==='chambers'&&v.length/Math.max(1,p.chamberCols||1)<2.5)warnings.push(t('Проверь полезную длину секции и сервисные проходы камер.'));
+  const base=t('LED — идеализированная оценка PPFD/PPE; воздух — валовый объём × ACH. Не рассчитаны HVAC, осушение, влаговыделение, гидравлика, кабели, защита и конструкции.');
+  $('calcStatus').textContent=(warnings.length?(LANG === 'es' ? 'Verificar: ' : 'Проверить: ')+warnings.join(' '):(t('Предварительная оценка.')+' ')+base);
 }
 
 function updateSelectedBar(object) {
-  $('selectedObjectName').textContent=object?object.name:state.product.name;
+  $('selectedObjectName').textContent=object?t(object.name):state.product.name;
   $('selectedObjectId').textContent=object?object.id:state.product.code;
 }
 
 function renderObjectInspector(object) {
   const root=$('objectInspector');
-  if(!object){root.innerHTML='<span class="eyebrow">OBJECT PROFILE</span><strong>Выбери компонент в 3D-сцене</strong><p>Нажми на объект. Здесь появятся назначение, габариты и инженерные свойства выбранного элемента.</p>';return;}
+  if(!object){root.innerHTML=`<span class="eyebrow">${LANG === 'es' ? 'PERFIL DEL OBJETO' : 'OBJECT PROFILE'}</span><strong>${t('Выбери компонент в 3D-сцене')}</strong><p>${t('Нажми на объект. Здесь появятся назначение, габариты и инженерные свойства выбранного элемента.')}</p>`;return;}
   const entries=Object.entries(object.spec||{}).slice(0,10);
   const detail=entries.map(([k,v])=>`<div><dt>${escapeHTML(k.replaceAll('_',' '))}</dt><dd>${escapeHTML(typeof v==='object'?JSON.stringify(v):String(v))}</dd></div>`).join('');
-  root.innerHTML=`<span class="eyebrow">${escapeHTML(object.group.toUpperCase())} · ${escapeHTML(object.id)}</span><strong>${escapeHTML(object.name)}</strong><p>${escapeHTML(object.description||'')}</p>${detail?`<dl>${detail}</dl>`:''}`;
+  root.innerHTML=`<span class="eyebrow">${escapeHTML(t(object.group).toUpperCase())} · ${escapeHTML(object.id)}</span><strong>${escapeHTML(t(object.name))}</strong><p>${escapeHTML(t(object.description||''))}</p>${detail?`<dl>${detail}</dl>`:''}`;
 }
 
 function pickObject(clientX,clientY) {
@@ -157,12 +158,12 @@ function exportOBJ(){
 }
 async function importJSON(file) {
   if(!file)return;
-  if(file.size>2*1024*1024){$('calcStatus').textContent='Импорт отклонён: JSON-файл больше 2 MiB.';return;}
+  if(file.size>2*1024*1024){$('calcStatus').textContent=t('Импорт отклонён: JSON-файл больше 2 MiB.');return;}
   try {
     const parsed=JSON.parse(await file.text());
     const productId=parsed.product_id||parsed.product?.id;
     const product=PRODUCTS.find(p=>p.id===productId);
-    if(!product)throw new Error('Неизвестный product_id в конфигурации.');
+    if(!product)throw new Error(t('Неизвестный product_id в конфигурации.'));
     selectProduct(product.id);
     const p=parsed.parameters||{};
     const geometry=parsed.geometry||{};
@@ -179,9 +180,9 @@ async function importJSON(file) {
     state.values.unitWidth=clamp(state.values.unitWidth,.2,3);state.values.ppfd=clamp(state.values.ppfd,0,1500);state.values.ppe=clamp(state.values.ppe,.1,5);
     state.values.photoperiod=clamp(state.values.photoperiod,0,24);state.values.ach=clamp(state.values.ach,0,60);
     setInputs();buildCurrentScene();fitCamera();updateMetrics();
-    $('calcStatus').textContent=`Импортирована конфигурация ${product.code}. Проверь входные значения и статус допущений.`;
+    $('calcStatus').textContent=LANG === 'es' ? `Configuración ${product.code} importada. Comprueba los valores de entrada y las hipótesis.` : `Импортирована конфигурация ${product.code}. Проверь входные значения и статус допущений.`;
   } catch(error) {
-    $('calcStatus').textContent=`Ошибка импорта: ${error.message}`;
+    $('calcStatus').textContent=`${t('Ошибка импорта:')} ${error.message}`;
   }
 }
 
@@ -243,7 +244,7 @@ function init() {
     state.renderer=createRenderer(canvas);
     $('renderStatus').textContent='WEBGL ONLINE';
   } catch(error) {
-    $('webglFallback').classList.remove('hidden');$('renderStatus').textContent='WEBGL UNAVAILABLE';console.error(error);return;
+    $('webglFallback').classList.remove('hidden');$('renderStatus').textContent=LANG === 'es' ? 'WEBGL NO DISPONIBLE' : 'WEBGL UNAVAILABLE';console.error(error);return;
   }
   renderCatalog();renderLayerControls();setInputs();buildCurrentScene();fitCamera();updateMetrics();initEvents();
   $('viewportTitle').textContent=state.product.name;$('viewportSubtitle').textContent=state.product.description;
