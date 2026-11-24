@@ -27,6 +27,8 @@ jobs:
 
       - name: Test calculation kernel
         run: node scripts/test_calculation_kernel.mjs
+      - name: Test Spanish localization
+        run: node scripts/test_spanish_localization.mjs
 
       - name: Verify Pages entry point
         shell: bash

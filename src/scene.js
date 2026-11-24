@@ -1,3 +1,5 @@
+import { t } from './i18n.js';
+
 const COLORS = {
   floor: '#68766b', frame: '#9ba99b', steel: '#81918a', darkSteel: '#53635c', shelf: '#8da08e', tray: '#536d53', plant: '#75b86c', plant2: '#a2cb79', led: '#e6d9a8', blue: '#4d9ab5', blueDark: '#34758e', tank: '#6a9bb0', tankDark: '#456d80', climate: '#8d8eae', cabinet: '#788b7e', amber: '#bf9c67', seed: '#9aaf79', road: '#3f4e43', wall: '#829085', white: '#d9e3d7'
 };
@@ -15,7 +17,7 @@ function addObject(scene, id, name, group, description, spec, meshes) {
   }
   const center = min.map((v,i)=>(v+max[i])/2);
   const size = min.map((v,i)=>Math.max(.05,max[i]-v));
-  const object = { id, name, group, description, spec: spec || {}, meshes, center, size };
+  const object = { id, name: t(name), group: t(group), description: t(description), spec: spec || {}, meshes, center, size };
   scene.objects.push(object);
   return object;
 }

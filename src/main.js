@@ -1,4 +1,5 @@
-import { PRODUCTS, GROUPS, createInitialState } from './catalog.js';
+import { LANG, t } from './i18n.js';
+const { PRODUCTS, GROUPS, createInitialState } = LANG === 'es' ? await import('./catalog.es.js') : await import('./catalog.js');
 import { buildScene, getCalculationMetrics, createProductReport, exportSceneOBJ } from './scene.js';
 import { createRenderer, projectPoint } from './gl.js';
 
@@ -13,7 +14,7 @@ function safeNumber(id, fallback) {
   return Number.isFinite(value) ? value : fallback;
 }
 function clamp(n,min,max){return Math.min(max,Math.max(min,n));}
-function format(n,d=2){return Number(n||0).toLocaleString('ru-RU',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function format(n,d=2){return Number(n||0).toLocaleString(LANG === 'es' ? 'es-ES' : 'ru-RU',{minimumFractionDigits:d,maximumFractionDigits:d});}
 function escapeHTML(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
 function setInputs() {
@@ -29,11 +30,11 @@ function renderCatalog(filter='') {
   const list=PRODUCTS.filter(p=>[p.name,p.short,p.category,p.description,p.code].join(' ').toLowerCase().includes(query));
   for(const product of list){
     const button=document.createElement('button');button.type='button';button.className='product-card'+(product.id===state.product.id?' selected':'');
-    button.innerHTML=`<span class="product-icon">${escapeHTML(product.icon)}</span><span><strong>${escapeHTML(product.name)}</strong><small>${escapeHTML(product.category)} · ${format(product.dimensions.length,1)} × ${format(product.dimensions.width,1)} × ${format(product.dimensions.height,1)} м</small></span><span class="product-chevron">›</span>`;
+    button.innerHTML=`<span class="product-icon">${escapeHTML(product.icon)}</span><span><strong>${escapeHTML(product.name)}</strong><small>${escapeHTML(product.category)} · ${format(product.dimensions.length,1)} × ${format(product.dimensions.width,1)} × ${format(product.dimensions.height,1)} m</small></span><span class="product-chevron">›</span>`;
     button.addEventListener('click',()=>selectProduct(product.id));root.appendChild(button);
   }
   $('productCount').textContent=String(PRODUCTS.length).padStart(2,'0');
-  if(!list.length)root.innerHTML='<div class="form-note" style="padding:12px">Совпадений нет.</div>';
+  if(!list.length)root.innerHTML=`<div class="form-note" style="padding:12px">${t('Совпадений нет.')}</div>`;
 }
 
 function renderLayerControls() {
@@ -50,7 +51,7 @@ function selectProduct(id) {
   const product=PRODUCTS.find(p=>p.id===id);if(!product)return;
   state.product=product;state.values=createInitialState(product);state.selectedId=null;
   $('viewportTitle').textContent=product.name;$('viewportSubtitle').textContent=product.description;
-  $('modeTag').textContent=product.type==='campus'?'CAMPUS OVERVIEW':'PRODUCT MODEL';
+  $('modeTag').textContent=product.type==='campus'?(LANG === 'es' ? 'VISTA DEL CAMPUS' : 'CAMPUS OVERVIEW'):(LANG === 'es' ? 'MODELO DE PRODUCTO' : 'PRODUCT MODEL');
   setInputs();renderCatalog($('catalogSearch').value);buildCurrentScene();fitCamera();
   updateSelectedBar(null);updateMetrics();renderObjectInspector(null);
 }
@@ -58,7 +59,7 @@ function selectProduct(id) {
 function buildCurrentScene() {
   state.scene=buildScene(state.product,state.values);
   const count=state.scene.objects.filter(o=>o.group!=='grid').length;
-  $('objectCountChip').textContent=`${count} OBJECTS`;
+  $('objectCountChip').textContent=`${count} ${LANG === 'es' ? 'OBJETOS' : 'OBJECTS'}`;
   state.selectedId=null;
   draw();
 }
@@ -84,8 +85,8 @@ function draw() {
 
 function updateMetrics() {
   const p=state.product,v=state.values,r=getCalculationMetrics(p,v);
-  $('floorAreaLabel').textContent=p.type==='campus'?'Суммарная площадь зданий':p.type==='containerHub'?'Площадь контейнеров':'Площадь пола';
-  $('grossVolumeLabel').textContent=p.type==='campus'?'Суммарный объём зданий':p.type==='containerHub'?'Объём контейнеров':'Валовый объём';
+  $('floorAreaLabel').textContent=p.type==='campus'?t('Суммарная площадь зданий'):p.type==='containerHub'?t('Площадь контейнеров'):t('Площадь пола');
+  $('grossVolumeLabel').textContent=p.type==='campus'?t('Суммарный объём зданий'):p.type==='containerHub'?t('Объём контейнеров'):t('Валовый объём');
   $('floorAreaMetric').textContent=format(r.floorArea,1);
   $('grossVolumeMetric').textContent=format(r.grossVolume,1);
   $('growAreaMetric').textContent=format(r.growArea,1);
@@ -96,26 +97,46 @@ function updateMetrics() {
   const warnings=[];
   if(p.type==='containerHub'){
     const count=Math.max(1,Math.round(v.chambers)),rows=Math.ceil(count/5),cols=Math.min(5,count),minL=cols*12.19+Math.max(0,cols-1)*.05,minW=rows*2.44+Math.max(0,rows-1)*.8;
-    if(v.length<minL)warnings.push(`Длина площадки меньше компоновочного минимума ${format(minL,2)} м.`);
-    if(v.width<minW)warnings.push(`Ширина площадки меньше ориентировочного минимума ${format(minW,2)} м.`);
+    if(v.length<minL)warnings.push(`${t('Длина площадки меньше компоновочного минимума')}: ${format(minL,2)} m.`);
+    if(v.width<minW)warnings.push(`${t('Ширина площадки меньше ориентировочного минимума')}: ${format(minW,2)} m.`);
   }
-  if(p.type==='campus'&&(v.length<72||v.width<52))warnings.push('Зоны кампуса пока расположены по фиксированному демонстрационному генплану и могут выйти за заданную границу участка.');
-  if(p.type==='chambers'&&v.length/Math.max(1,p.chamberCols||1)<2.5)warnings.push('Проверь полезную длину секции и сервисные проходы камер.');
-  const base='LED — идеализированная оценка PPFD/PPE; воздух — валовый объём × ACH. Не рассчитаны HVAC, осушение, влаговыделение, гидравлика, кабели, защита и конструкции.';
-  $('calcStatus').textContent=(warnings.length?'Проверить: '+warnings.join(' '):'Предварительная оценка. ')+base;
+  if(p.type==='campus'&&(v.length<72||v.width<52))warnings.push(t('Зоны кампуса пока расположены по фиксированному демонстрационному генплану и могут выйти за заданную границу участка.'));
+  if(p.type==='chambers'&&v.length/Math.max(1,p.chamberCols||1)<2.5)warnings.push(t('Проверь полезную длину секции и сервисные проходы камер.'));
+  const base=t('LED — идеализированная оценка PPFD/PPE; воздух — валовый объём × ACH. Не рассчитаны HVAC, осушение, влаговыделение, гидравлика, кабели, защита и конструкции.');
+  $('calcStatus').textContent=(warnings.length?(LANG === 'es' ? 'Verificar: ' : 'Проверить: ')+warnings.join(' '):(t('Предварительная оценка.')+' ')+base);
 }
 
 function updateSelectedBar(object) {
-  $('selectedObjectName').textContent=object?object.name:state.product.name;
+  $('selectedObjectName').textContent=object?t(object.name):state.product.name;
   $('selectedObjectId').textContent=object?object.id:state.product.code;
 }
 
 function renderObjectInspector(object) {
   const root=$('objectInspector');
-  if(!object){root.innerHTML='<span class="eyebrow">OBJECT PROFILE</span><strong>Выбери компонент в 3D-сцене</strong><p>Нажми на объект. Здесь появятся назначение, габариты и инженерные свойства выбранного элемента.</p>';return;}
+  if(!object){root.innerHTML=`<span class="eyebrow">${LANG === 'es' ? 'PERFIL DEL OBJETO' : 'OBJECT PROFILE'}</span><strong>${t('Выбери компонент в 3D-сцене')}</strong><p>${t('Нажми на объект. Здесь появятся назначение, габариты и инженерные свойства выбранного элемента.')}</p>`;return;}
   const entries=Object.entries(object.spec||{}).slice(0,10);
-  const detail=entries.map(([k,v])=>`<div><dt>${escapeHTML(k.replaceAll('_',' '))}</dt><dd>${escapeHTML(typeof v==='object'?JSON.stringify(v):String(v))}</dd></div>`).join('');
-  root.innerHTML=`<span class="eyebrow">${escapeHTML(object.group.toUpperCase())} · ${escapeHTML(object.id)}</span><strong>${escapeHTML(object.name)}</strong><p>${escapeHTML(object.description||'')}</p>${detail?`<dl>${detail}</dl>`:''}`;
+  const specLabels = {
+    length_m:'Longitud (m)',width_m:'Anchura (m)',height_m:'Altura (m)',floor_area_m2:'Superficie de suelo (m²)',gross_volume_m3:'Volumen bruto (m³)',
+    construction:'Construcción',rack_length_m:'Longitud de estantería (m)',rack_depth_m:'Profundidad de estantería (m)',levels:'Niveles',
+    growing_surface_m2:'Superficie de cultivo (m²)',fixture_type:'Tipo de luminaria',design_input:'Parámetros de diseño',
+    visual_instances:'Elementos visuales',nominal_volume_l:'Volumen nominal (L)',visual_height_m:'Altura visual (m)',visual_diameter_m:'Diámetro visual (m)',
+    fluid:'Fluido',rated_power_W:'Potencia nominal (W)',flow_rate_m3_h:'Caudal (m³/h)',head_m:'Altura manométrica (m)',
+    process:'Proceso',sensors:'Sensores',dosing_channels:'Canales de dosificación',pipe_material:'Material de tubería',diameter_mm:'Diámetro (mm)',
+    design_flow_m3_h:'Caudal de diseño (m³/h)',cooling_capacity_kW:'Capacidad frigorífica (kW)',dehumidification_kg_h:'Deshumidificación (kg/h)',
+    airflow_m3_h:'Caudal de aire (m³/h)',installed_power_W:'Potencia instalada (W)',design_airflow_m3_h:'Caudal de aire de diseño (m³/h)',
+    air_velocity_m_s:'Velocidad del aire (m/s)',plc:'PLC',remote_io:'E/S remotas',power_W:'Potencia (W)',io_points:'Puntos de E/S',
+    network:'Red',role:'Función',services:'Servicios',network_topology:'Topología de red',chambers:'Cámaras',grid:'Distribución',
+    site_length_m:'Longitud del terreno (m)',site_width_m:'Anchura del terreno (m)',site_area_m2:'Superficie del terreno (m²)',
+    road_width_m:'Anchura del vial (m)',bench_length_m:'Longitud de la mesa (m)',utilities:'Servicios',
+    rack_count:'Número de bastidores',ups:'SAI / UPS',storage_policy:'Política de almacenamiento',climate_control:'Control climático',
+    channels:'Canales',pH_EC:'Control de pH/EC',container_count:'Número de contenedores',clear_width_m:'Anchura libre (m)'
+  };
+  const detail=entries.map(([k,v])=>{
+    const label=LANG === 'es' ? (specLabels[k]||k.replaceAll('_',' ')) : k.replaceAll('_',' ');
+    const raw=typeof v==='object'?(Array.isArray(v)?v.join(', '):JSON.stringify(v)):String(v);
+    return `<div><dt>${escapeHTML(label)}</dt><dd>${escapeHTML(t(raw))}</dd></div>`;
+  }).join('');
+  root.innerHTML=`<span class="eyebrow">${escapeHTML(t(object.group).toUpperCase())} · ${escapeHTML(object.id)}</span><strong>${escapeHTML(t(object.name))}</strong><p>${escapeHTML(t(object.description||''))}</p>${detail?`<dl>${detail}</dl>`:''}`;
 }
 
 function pickObject(clientX,clientY) {
@@ -157,12 +178,12 @@ function exportOBJ(){
 }
 async function importJSON(file) {
   if(!file)return;
-  if(file.size>2*1024*1024){$('calcStatus').textContent='Импорт отклонён: JSON-файл больше 2 MiB.';return;}
+  if(file.size>2*1024*1024){$('calcStatus').textContent=t('Импорт отклонён: JSON-файл больше 2 MiB.');return;}
   try {
     const parsed=JSON.parse(await file.text());
     const productId=parsed.product_id||parsed.product?.id;
     const product=PRODUCTS.find(p=>p.id===productId);
-    if(!product)throw new Error('Неизвестный product_id в конфигурации.');
+    if(!product)throw new Error(t('Неизвестный product_id в конфигурации.'));
     selectProduct(product.id);
     const p=parsed.parameters||{};
     const geometry=parsed.geometry||{};
@@ -179,24 +200,24 @@ async function importJSON(file) {
     state.values.unitWidth=clamp(state.values.unitWidth,.2,3);state.values.ppfd=clamp(state.values.ppfd,0,1500);state.values.ppe=clamp(state.values.ppe,.1,5);
     state.values.photoperiod=clamp(state.values.photoperiod,0,24);state.values.ach=clamp(state.values.ach,0,60);
     setInputs();buildCurrentScene();fitCamera();updateMetrics();
-    $('calcStatus').textContent=`Импортирована конфигурация ${product.code}. Проверь входные значения и статус допущений.`;
+    $('calcStatus').textContent=LANG === 'es' ? `Configuración ${product.code} importada. Comprueba los valores de entrada y las hipótesis.` : `Импортирована конфигурация ${product.code}. Проверь входные значения и статус допущений.`;
   } catch(error) {
-    $('calcStatus').textContent=`Ошибка импорта: ${error.message}`;
+    $('calcStatus').textContent=`${t('Ошибка импорта:')} ${error.message}`;
   }
 }
 
 function exportBOM(){
   const v=state.values,met=getCalculationMetrics(state.product,v),p=state.product;
   const rows=[['item_id','item','quantity','unit','power_W','status'],
-    ['SHELL-001','Оболочка / каркас',1,'комплект','', 'геометрия концептуальная'],
-    ['GROW-001','Стеллажи / грядки',v.units,'шт.','', 'параметрическая конфигурация'],
-    ['LED-EST','LED установленная мощность (оценка)',format(met.ledPowerW,1),'W',format(met.ledPowerW,1),'оценка PPFD/PPE'],
-    ['WATER-001','Бак воды / раствора',1,'шт.','',`номинал ${p.waterTankL||0} л — placeholder`],
-    ['PUMP-001','Насосная группа',1,'комплект',p.componentPowers?.pump||0,'требуется рабочая точка'],
-    ['FAN-001','Циркуляция / вентиляторы',1,'комплект',p.componentPowers?.circulation||0,'условная установленная мощность'],
-    ['CTRL-001','Управление / PLC / I/O',1,'комплект',p.componentPowers?.controls||0,'архитектурный placeholder'],
-    ['HVAC-TBD','HVAC / осушение',1,'комплект','','не рассчитано'],
-    ['PIPE-TBD','Трубопроводы / арматура',1,'комплект','','не рассчитано']
+    ['SHELL-001',t('Оболочка / каркас'),1,t('комплект'),'',t('геометрия концептуальная')],
+    ['GROW-001',t('Стеллажи / грядки'),v.units,t('шт.'),'',t('параметрическая конфигурация')],
+    ['LED-EST',t('LED установленная мощность (оценка)'),format(met.ledPowerW,1),'W',format(met.ledPowerW,1),t('оценка PPFD/PPE')],
+    ['WATER-001',t('Бак воды / раствора'),1,t('шт.'),'',`${t('номинал')} ${p.waterTankL||0} ${t('л')} — ${t('placeholder')}`],
+    ['PUMP-001',t('Насосная группа'),1,t('комплект'),p.componentPowers?.pump||0,t('требуется рабочая точка')],
+    ['FAN-001',t('Циркуляция / вентиляторы'),1,t('комплект'),p.componentPowers?.circulation||0,t('условная установленная мощность')],
+    ['CTRL-001',t('Управление / PLC / I/O'),1,t('комплект'),p.componentPowers?.controls||0,t('архитектурный placeholder')],
+    ['HVAC-TBD',t('HVAC / осушение'),1,t('комплект'),' ',t('не рассчитано')],
+    ['PIPE-TBD',t('Трубопроводы / арматура'),1,t('комплект'),' ',t('не рассчитано')]
   ];
   const csv=rows.map(row=>row.map(cell=>`"${String(cell).replaceAll('"','""')}"`).join(';')).join('\r\n');
   downloadBlob(`${p.id}-bom.csv`,'\uFEFF'+csv,'text/csv;charset=utf-8');
@@ -243,7 +264,7 @@ function init() {
     state.renderer=createRenderer(canvas);
     $('renderStatus').textContent='WEBGL ONLINE';
   } catch(error) {
-    $('webglFallback').classList.remove('hidden');$('renderStatus').textContent='WEBGL UNAVAILABLE';console.error(error);return;
+    $('webglFallback').classList.remove('hidden');$('renderStatus').textContent=LANG === 'es' ? 'WEBGL NO DISPONIBLE' : 'WEBGL UNAVAILABLE';console.error(error);return;
   }
   renderCatalog();renderLayerControls();setInputs();buildCurrentScene();fitCamera();updateMetrics();initEvents();
   $('viewportTitle').textContent=state.product.name;$('viewportSubtitle').textContent=state.product.description;
