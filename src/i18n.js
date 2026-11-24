@@ -122,6 +122,7 @@ const FRAGMENTS = [
   ["Каркас контейнера", "Estructura del contenedor"],
   ["Каркас теплицы", "Estructura del invernadero"],
   ["Склад и упаковка", "Almacén y envasado"],
+  ["складские стеллажи", "estanterías de almacén"],
   ["стеллажи", "estanterías"],
   ["Камера ", "Cámara "], ["стеллаж", "estantería"], ["Стеллаж", "Estantería"],
   ["Грядка", "Bancal"], ["Контейнер", "Contenedor"], ["растения", "plantas"],
