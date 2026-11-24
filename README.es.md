@@ -57,3 +57,5 @@ La comprobación automatizada `node scripts/test_spanish_localization.mjs` valid
 
 
 <!-- Spanish localization CI checkpoint -->
+
+<!-- Localization regression checkpoint 2 -->
