@@ -119,6 +119,8 @@ const ES = {
 
 const FRAGMENTS = [
   ["Конструктивная оболочка", "Envolvente estructural"],
+  ["Каркас контейнера", "Estructura del contenedor"],
+  ["Каркас теплицы", "Estructura del invernadero"],
   ["Камера ", "Cámara "], ["стеллаж", "estantería"], ["Стеллаж", "Estantería"],
   ["Грядка", "Bancal"], ["Контейнер", "Contenedor"], ["растения", "plantas"],
   ["посадки", "cultivos"], ["оболочка", "envolvente"],
